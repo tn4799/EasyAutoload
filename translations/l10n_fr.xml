@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+	<texts>
+		<text name="input_workMode" text="AutoLoader: activer le mode de travail"/>
+		<text name="input_select" text="AutoLoader: Sélectionnez un matériau"/>
+		<text name="input_markerPosition" text="AutoLoader: Position du marqueur"/>
+		<text name="input_unload" text="AutoLoader: Décharger"/>
+		<text name="input_moveMarkerUp" text="AutoLoader: Marqueur: déplacer vers le haut"/>
+		<text name="input_moveMarkerDown" text=" AutoLoader: Marqueur: descendre"/>
+		<text name="input_moveMarkerLeft" text="AutoLoader: Marqueur: déplacer à gauche"/>
+		<text name="input_moveMarkerRight" text=" AutoLoader: Marqueur: déplacer à droite"/>
+		<text name="input_moveMarkerOriginal" text="AutoLoader: Marqueur: position d'origine"/>
+		<text name="input_moveMarkerForward" text="AutoLoader: Marqueur: aller de l'avant"/>
+		<text name="input_moveMarkerBackward" text="AutoLoader: Marqueur: reculer"/>
+		<text name="input_markerRotation" text="AutoLoader: Marqueur: tourner 90°"/>
+	</texts>
+</l10n>

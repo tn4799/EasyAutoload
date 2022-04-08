@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="44">
+    <author>alfalfa6945</author>
+    <version>0.1.1.3</version>
+    <title>
+        <en>Easy Autoload</en>
+    </title>
+    <description>
+        <en>Easy Autoload Specialization</en>
+        <de>Einfaches Automatisches Laden Spezialisierung</de>
+        <fr>Spécialité facile de chargement automatique</fr>
+    </description>
+    <iconFilename>icon.png</iconFilename>
+    <multiplayer supported="true"/>
+
+	<l10n filenamePrefix="l10n"/>
+	
+	<actions>
+		<action name="workMode" axisType="HALF"/>
+		<action name="select" axisType="HALF"/>
+		<action name="markerPosition" axisType="HALF"/>
+		<action name="unload" axisType="HALF"/>
+		<action name="moveMarkerUp" axisType="HALF"/>
+		<action name="moveMarkerDown" axisType="HALF"/>
+		<action name="moveMarkerLeft" axisType="HALF"/>
+		<action name="moveMarkerRight" axisType="HALF"/>
+		<action name="moveMarkerForward" axisType="HALF"/>
+		<action name="moveMarkerBackward" axisType="HALF"/>
+		<action name="moveMarkerOriginal" axisType="HALF"/>
+		<action name="markerRotation" axisType="HALF"/>
+	</actions>
+	
+	<inputBinding>
+		<actionBinding action="workMode">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_u" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_5 BUTTON_6 BUTTON_10" />
+		</actionBinding>
+		<actionBinding action="select">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_z" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_5 BUTTON_6 BUTTON_9" />
+		</actionBinding>
+		<actionBinding action="markerPosition">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_b" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_5 BUTTON_1" />
+		</actionBinding>
+		<actionBinding action="unload">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_y" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_6 BUTTON_4" />
+		</actionBinding>
+		<actionBinding action="moveMarkerUp">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_j" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_5 AXIS_2-" />
+		</actionBinding>
+		<actionBinding action="moveMarkerDown">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_n" />
+			<binding device="0_XINPUT_GAMEPAD" input="AXIS_2+" />
+		</actionBinding>
+		<actionBinding action="moveMarkerLeft">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_comma" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_6 AXIS_3-" />
+		</actionBinding>
+		<actionBinding action="moveMarkerRight">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_period" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_6 AXIS_3+" />
+		</actionBinding>
+		<actionBinding action="moveMarkerForward">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_o" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_6 AXIS_4-" />
+		</actionBinding>
+		<actionBinding action="moveMarkerBackward">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_k" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_6 AXIS_4+" />
+		</actionBinding>
+		<actionBinding action="moveMarkerOriginal">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_m" />
+			<binding device="0_XINPUT_GAMEPAD" input="BUTTON_5 BUTTON_20" />
+		</actionBinding>
+		<actionBinding action="markerRotation">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_slash" />
+		</actionBinding>
+	</inputBinding>
+	
+	<extraSourceFiles>
+		<sourceFile filename="scripts/register.lua" />
+	</extraSourceFiles>
+</modDesc>

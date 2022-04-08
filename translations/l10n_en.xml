@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+	<texts>
+		<text name="input_workMode" text="AutoLoader: Work mode"/>
+		<text name="input_select" text="AutoLoader: Select Material"/>
+		<text name="input_markerPosition" text="AutoLoader: Marker Position"/>
+		<text name="input_unload" text="AutoLoader: Unload"/>
+		<text name="input_moveMarkerUp" text="AutoLoader: Marker: move up"/>
+		<text name="input_moveMarkerDown" text="AutoLoader: Marker: move down"/>
+		<text name="input_moveMarkerLeft" text="AutoLoader: Marker: move left"/>
+		<text name="input_moveMarkerRight" text="AutoLoader: Marker: move right"/>
+		<text name="input_moveMarkerOriginal" text="AutoLoader: Marker: original position"/>
+		<text name="input_moveMarkerForward" text="AutoLoader: Marker: move forward"/>
+		<text name="input_moveMarkerBackward" text="AutoLoader: Marker: move backward"/>
+		<text name="input_markerRotation" text="AutoLoader: Marker: rotate 90°"/>
+	</texts>
+</l10n>

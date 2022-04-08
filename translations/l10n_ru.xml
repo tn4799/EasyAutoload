@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+	<texts>
+		<text name="input_workMode" text="Автопогрузка: Включить"/>
+		<text name="input_select" text="Автопогрузка: Выберите материал"/>
+		<text name="input_markerPosition" text="Автопогрузка: Маркер"/>
+		<text name="input_unload" text="Автопогрузка: Выгрузить"/>
+		<text name="input_moveMarkerUp" text="Автопогрузка: Маркер: вверх"/>
+		<text name="input_moveMarkerDown" text="Автопогрузка: Маркер: вниз"/>
+		<text name="input_moveMarkerLeft" text="Автопогрузка: Маркер: влево"/>
+		<text name="input_moveMarkerRight" text="Автопогрузка: Маркер: вправо"/>
+		<text name="input_moveMarkerOriginal" text="Автопогрузка: Маркер: возврат"/>
+		<text name="input_moveMarkerForward" text="Автопогрузка: Маркер: вперёд"/>
+		<text name="input_moveMarkerBackward" text="Автопогрузка: Маркер: назад"/>
+		<text name="input_markerRotation" text="Автопогрузка: Маркер: поворот на 90°"/>
+	</texts>
+</l10n>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+	<texts>
+		<text name="input_workMode" text="Tryb Pracy"/>
+		<text name="input_select" text="Wybierz Materiał"/>
+		<text name="input_markerPosition" text="Pozycja Znacznika"/>
+		<text name="input_unload" text="Wyładuj"/>
+		<text name="input_moveMarkerUp" text="Znacznik: Podnieś"/>
+		<text name="input_moveMarkerDown" text="Znacznik: Opuść"/>
+		<text name="input_moveMarkerLeft" text="Znacznik: Przesuń lewo"/>
+		<text name="input_moveMarkerRight" text="Znacznik: Przesuń w prawo"/>
+		<text name="input_moveMarkerOriginal" text="Znacznik: Przywróć pozycję"/>
+		<text name="input_moveMarkerForward" text="Znacznik: Przesuń w przód"/>
+		<text name="input_moveMarkerBackward" text="Znacznik: Przesuń w tył"/>
+		<text name="input_markerRotation" text="Znacznik: Obróć o 90°"/>
+	</texts>
+</l10n>

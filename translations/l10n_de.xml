@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!-- Thank you for the translation, BD-Modding/Pascal -->
+<l10n>
+	<texts>
+		<text name="input_workMode" text="Arbeitsmodus"/>
+		<text name="input_select" text="Ladegut wählen"/>
+		<text name="input_markerPosition" text="Markierung Abladeseite"/>
+		<text name="input_unload" text="Entladen"/>
+		<text name="input_moveMarkerUp" text="Markierung: Hoch"/>
+		<text name="input_moveMarkerDown" text="Markierung: Runter"/>
+		<text name="input_moveMarkerLeft" text="Markierung: Links"/>
+		<text name="input_moveMarkerRight" text="Markierung: Rechts"/>
+		<text name="input_moveMarkerOriginal" text="Markierung: Startosition"/>
+		<text name="input_moveMarkerForward" text="Markierung: Vorwärts"/>
+		<text name="input_moveMarkerBackward" text="Markierung: Rückwärts"/>
+		<text name="input_markerRotation" text="Markierung:: Drehen 90°"/>
+	</texts>
+</l10n>
