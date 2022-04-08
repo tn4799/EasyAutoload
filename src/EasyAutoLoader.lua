@@ -3,46 +3,55 @@
 -- version 0.1.1.2
 -- ***script is still in early development, you really shouldn't use it in a production environment
 
-easyAutoLoader = {}
+EasyAutoLoader = {}
 
 local autoloadModName = g_currentModName
 
-function easyAutoLoader.prerequisitesPresent(specializations)
+function EasyAutoLoader.prerequisitesPresent(specializations)
 	return true
 end
 
-function easyAutoLoader.registerFunctions(vehicleType)
-	SpecializationUtil.registerFunction(vehicleType, "doStateChange", easyAutoLoader.doStateChange)
-	SpecializationUtil.registerFunction(vehicleType, "setMarkerVisibility", easyAutoLoader.setMarkerVisibility)
-	SpecializationUtil.registerFunction(vehicleType, "setMarkerPosition", easyAutoLoader.setMarkerPosition)
-	SpecializationUtil.registerFunction(vehicleType, "setUnloadPosition", easyAutoLoader.setUnloadPosition)
-	SpecializationUtil.registerFunction(vehicleType, "objectCallback", easyAutoLoader.objectCallback)
-	SpecializationUtil.registerFunction(vehicleType, "setWorkMode", easyAutoLoader.setWorkMode)
-	SpecializationUtil.registerFunction(vehicleType, "setSelect", easyAutoLoader.setSelect)
-	SpecializationUtil.registerFunction(vehicleType, "setUnload", easyAutoLoader.setUnload)
-	SpecializationUtil.registerFunction(vehicleType, "changeMarkerPosition", easyAutoLoader.changeMarkerPosition)
-	SpecializationUtil.registerFunction(vehicleType, "moveMarkerLeft", easyAutoLoader.moveMarkerLeft)
-	SpecializationUtil.registerFunction(vehicleType, "moveMarkerRight", easyAutoLoader.moveMarkerRight)
-	SpecializationUtil.registerFunction(vehicleType, "moveMarkerUp", easyAutoLoader.moveMarkerUp)
-	SpecializationUtil.registerFunction(vehicleType, "moveMarkerDown", easyAutoLoader.moveMarkerDown)
-	SpecializationUtil.registerFunction(vehicleType, "moveMarkerForward", easyAutoLoader.moveMarkerForward)
-	SpecializationUtil.registerFunction(vehicleType, "moveMarkerBackward", easyAutoLoader.moveMarkerBackward)
-	SpecializationUtil.registerFunction(vehicleType, "moveMarkerOriginal", easyAutoLoader.moveMarkerOriginal)
-	SpecializationUtil.registerFunction(vehicleType, "setMarkerRotation", easyAutoLoader.setMarkerRotation)
-	SpecializationUtil.registerFunction(vehicleType, "triggerHelperMode", easyAutoLoader.triggerHelperMode)
-	SpecializationUtil.registerFunction(vehicleType, "updateBindings", easyAutoLoader.updateBindings)
-	SpecializationUtil.registerFunction(vehicleType, "isDedicatedServer", easyAutoLoader.isDedicatedServer)
+function EasyAutoLoader.registerFunctions(vehicleType)
+	SpecializationUtil.registerFunction(vehicleType, "doStateChange", EasyAutoLoader.doStateChange)
+	SpecializationUtil.registerFunction(vehicleType, "setMarkerVisibility", EasyAutoLoader.setMarkerVisibility)
+	SpecializationUtil.registerFunction(vehicleType, "setMarkerPosition", EasyAutoLoader.setMarkerPosition)
+	SpecializationUtil.registerFunction(vehicleType, "setUnloadPosition", EasyAutoLoader.setUnloadPosition)
+	SpecializationUtil.registerFunction(vehicleType, "objectCallback", EasyAutoLoader.objectCallback)
+	SpecializationUtil.registerFunction(vehicleType, "setWorkMode", EasyAutoLoader.setWorkMode)
+	SpecializationUtil.registerFunction(vehicleType, "setSelect", EasyAutoLoader.setSelect)
+	SpecializationUtil.registerFunction(vehicleType, "setUnload", EasyAutoLoader.setUnload)
+	SpecializationUtil.registerFunction(vehicleType, "changeMarkerPosition", EasyAutoLoader.changeMarkerPosition)
+	SpecializationUtil.registerFunction(vehicleType, "moveMarkerLeft", EasyAutoLoader.moveMarkerLeft)
+	SpecializationUtil.registerFunction(vehicleType, "moveMarkerRight", EasyAutoLoader.moveMarkerRight)
+	SpecializationUtil.registerFunction(vehicleType, "moveMarkerUp", EasyAutoLoader.moveMarkerUp)
+	SpecializationUtil.registerFunction(vehicleType, "moveMarkerDown", EasyAutoLoader.moveMarkerDown)
+	SpecializationUtil.registerFunction(vehicleType, "moveMarkerForward", EasyAutoLoader.moveMarkerForward)
+	SpecializationUtil.registerFunction(vehicleType, "moveMarkerBackward", EasyAutoLoader.moveMarkerBackward)
+	SpecializationUtil.registerFunction(vehicleType, "moveMarkerOriginal", EasyAutoLoader.moveMarkerOriginal)
+	SpecializationUtil.registerFunction(vehicleType, "setMarkerRotation", EasyAutoLoader.setMarkerRotation)
+	SpecializationUtil.registerFunction(vehicleType, "triggerHelperMode", EasyAutoLoader.triggerHelperMode)
+	SpecializationUtil.registerFunction(vehicleType, "updateBindings", EasyAutoLoader.updateBindings)
+	SpecializationUtil.registerFunction(vehicleType, "isDedicatedServer", EasyAutoLoader.isDedicatedServer)
 end
 
-function easyAutoLoader.registerEventListeners(vehicleType)
-	for _, spec in pairs({"onLoad", "onPostLoad", "onDelete", "onUpdate", "onDraw", "onReadStream", "onWriteStream", "onRegisterActionEvents", "saveToXMLFile"}) do
-		SpecializationUtil.registerEventListener(vehicleType, spec, easyAutoLoader)
+function EasyAutoLoader.registerEventListeners(vehicleType)
+	for _, event in pairs({"onLoad", "onPostLoad", "onDelete", "onUpdate", "onDraw", "onReadStream", "onWriteStream", "onRegisterActionEvents", "saveToXMLFile"}) do
+		SpecializationUtil.registerEventListener(vehicleType, event, EasyAutoLoader)
 	end
 end
 
-function easyAutoLoader:onLoad(savegame)
-	self.spec_easyAutoLoader = {}
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader.registerXMLPaths(schema, basePath)
+	schema:setXMLSpecializationType("easyAutoLoader")
+	basePath = basePath .. ".easyAutoLoader"
+
+	schema:register(XMLValueType.NODE_INDEX, basePath .. "#triggerNode")
+	schema:register(XMLValueType.NODE_INDEX, basePath .. "#markerNode")
+	schema:register(XMLValueType.STRING, basePath .. "#triggerAnimation")
+end
+
+function EasyAutoLoader:onLoad(savegame)
+	local spec = self.spec_EasyAutoLoader
+	
 	spec.moveTrigger = getXMLString(self.xmlFile, "vehicle.easyAutoLoad#triggerAnimation")
 	spec.workMode = false
 	spec.currentNumObjects = 0
@@ -155,24 +164,24 @@ function easyAutoLoader:onLoad(savegame)
 			table.insert(spec.autoLoadObjects, entry)
 		end
 	end
-	spec.easyAutoLoaderRegistrationList = {}
-	spec.easyAutoLoaderRegistrationList[InputAction.workMode] = { callback=easyAutoLoader.setWorkMode, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=true, callbackState=-1, text=g_i18n:getText("workModeOn", self.customEnvironment), textVisibility=true }
-	spec.easyAutoLoaderRegistrationList[InputAction.select] = { callback=easyAutoLoader.setSelect, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=true, callbackState=-1, text=spec.autoLoadObjects[spec.state].nameL, textVisibility=true }
-	spec.easyAutoLoaderRegistrationList[InputAction.markerPosition] = { callback=easyAutoLoader.changeMarkerPosition, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=false, callbackState=-1, text=g_i18n:getText("input_markerPosition"), textVisibility=true }
-	spec.easyAutoLoaderRegistrationList[InputAction.unload] = { callback=easyAutoLoader.setUnload, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=false, callbackState=-1, text=g_i18n:getText("input_unload"), textVisibility=true }
-	spec.easyAutoLoaderRegistrationList[InputAction.moveMarkerUp] = { callback=easyAutoLoader.moveMarkerUp, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerUp"), textVisibility=false }
-	spec.easyAutoLoaderRegistrationList[InputAction.moveMarkerDown] = { callback=easyAutoLoader.moveMarkerDown, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerDown"), textVisibility=false }
-	spec.easyAutoLoaderRegistrationList[InputAction.moveMarkerLeft] = { callback=easyAutoLoader.moveMarkerLeft, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerLeft"), textVisibility=false }
-	spec.easyAutoLoaderRegistrationList[InputAction.moveMarkerRight] = { callback=easyAutoLoader.moveMarkerRight, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerRight"), textVisibility=false }
-	spec.easyAutoLoaderRegistrationList[InputAction.moveMarkerForward] = { callback=easyAutoLoader.moveMarkerForward, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerForward"), textVisibility=false }
-	spec.easyAutoLoaderRegistrationList[InputAction.moveMarkerBackward] = { callback=easyAutoLoader.moveMarkerBackward, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerBackward"), textVisibility=false }
-	spec.easyAutoLoaderRegistrationList[InputAction.moveMarkerOriginal] = { callback=easyAutoLoader.moveMarkerOriginal, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerOriginal"), textVisibility=true }
+	spec.EasyAutoLoaderRegistrationList = {}
+	spec.EasyAutoLoaderRegistrationList[InputAction.workMode] = { callback=EasyAutoLoader.setWorkMode, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=true, callbackState=-1, text=g_i18n:getText("workModeOn", self.customEnvironment), textVisibility=true }
+	spec.EasyAutoLoaderRegistrationList[InputAction.select] = { callback=EasyAutoLoader.setSelect, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=true, callbackState=-1, text=spec.autoLoadObjects[spec.state].nameL, textVisibility=true }
+	spec.EasyAutoLoaderRegistrationList[InputAction.markerPosition] = { callback=EasyAutoLoader.changeMarkerPosition, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=false, callbackState=-1, text=g_i18n:getText("input_markerPosition"), textVisibility=true }
+	spec.EasyAutoLoaderRegistrationList[InputAction.unload] = { callback=EasyAutoLoader.setUnload, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=false, callbackState=-1, text=g_i18n:getText("input_unload"), textVisibility=true }
+	spec.EasyAutoLoaderRegistrationList[InputAction.moveMarkerUp] = { callback=EasyAutoLoader.moveMarkerUp, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerUp"), textVisibility=false }
+	spec.EasyAutoLoaderRegistrationList[InputAction.moveMarkerDown] = { callback=EasyAutoLoader.moveMarkerDown, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerDown"), textVisibility=false }
+	spec.EasyAutoLoaderRegistrationList[InputAction.moveMarkerLeft] = { callback=EasyAutoLoader.moveMarkerLeft, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerLeft"), textVisibility=false }
+	spec.EasyAutoLoaderRegistrationList[InputAction.moveMarkerRight] = { callback=EasyAutoLoader.moveMarkerRight, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerRight"), textVisibility=false }
+	spec.EasyAutoLoaderRegistrationList[InputAction.moveMarkerForward] = { callback=EasyAutoLoader.moveMarkerForward, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerForward"), textVisibility=false }
+	spec.EasyAutoLoaderRegistrationList[InputAction.moveMarkerBackward] = { callback=EasyAutoLoader.moveMarkerBackward, triggerUp=false, triggerDown=true, triggerAlways=true, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerBackward"), textVisibility=false }
+	spec.EasyAutoLoaderRegistrationList[InputAction.moveMarkerOriginal] = { callback=EasyAutoLoader.moveMarkerOriginal, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=false, callbackState=-1, text=g_i18n:getText("input_moveMarkerOriginal"), textVisibility=true }
 	if spec.useMarkerRotate then
-		spec.easyAutoLoaderRegistrationList[InputAction.markerRotation] = { callback=easyAutoLoader.triggerHelperMode, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=false, callbackState=-1, text=g_i18n:getText("input_markerRotation"), textVisibility=true }
+		spec.EasyAutoLoaderRegistrationList[InputAction.markerRotation] = { callback=EasyAutoLoader.triggerHelperMode, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=false, callbackState=-1, text=g_i18n:getText("input_markerRotation"), textVisibility=true }
 	end
 	spec.coloredIcons = Utils.getNoNil(getXMLBool(self.xmlFile, "vehicle.easyAutoLoad.levelBarOptions#coloredIcons"), false)
 	if not self:isDedicatedServer() then
-		spec.easyAutoLoaderIcons = {}
+		spec.EasyAutoLoaderIcons = {}
 		local fillLevelColor = ConfigurationUtil.getColorFromString(Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.levelBarOptions#fillLevelColor"), "0.991 0.3865 0.01 1"))
 		local fillLevelTextColor = {1, 1, 1, 0.2}
 		spec.fillLevelsTextColor = {1, 1, 1, 1}
@@ -188,12 +197,12 @@ function easyAutoLoader:onLoad(savegame)
 			end
 		end
 		spec.fillLevelBarHeight = g_currentMission.hud.fillLevelsDisplay.origY + ((offsetY + iconHeight) * numFillLevelDisplays)
-		spec.easyAutoLoaderIcons.palletIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and getXMLString(self.xmlFile, "vehicle.easyAutoLoad.palletIcon#colorIcon") or getXMLString(self.xmlFile, "vehicle.easyAutoLoad.palletIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
-		spec.easyAutoLoaderIcons.roundBaleIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and getXMLString(self.xmlFile, "vehicle.easyAutoLoad.roundBaleIcon#colorIcon") or getXMLString(self.xmlFile, "vehicle.easyAutoLoad.roundBaleIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
-		spec.easyAutoLoaderIcons.squareBaleIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and getXMLString(self.xmlFile, "vehicle.easyAutoLoad.squareBaleIcon#colorIcon") or getXMLString(self.xmlFile, "vehicle.easyAutoLoad.squareBaleIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
+		spec.EasyAutoLoaderIcons.palletIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and getXMLString(self.xmlFile, "vehicle.easyAutoLoad.palletIcon#colorIcon") or getXMLString(self.xmlFile, "vehicle.easyAutoLoad.palletIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
+		spec.EasyAutoLoaderIcons.roundBaleIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and getXMLString(self.xmlFile, "vehicle.easyAutoLoad.roundBaleIcon#colorIcon") or getXMLString(self.xmlFile, "vehicle.easyAutoLoad.roundBaleIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
+		spec.EasyAutoLoaderIcons.squareBaleIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and getXMLString(self.xmlFile, "vehicle.easyAutoLoad.squareBaleIcon#colorIcon") or getXMLString(self.xmlFile, "vehicle.easyAutoLoad.squareBaleIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
 		if not spec.coloredIcons then
 			local iconColor = ConfigurationUtil.getColorFromString(Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.levelBarOptions#iconColor"), "0.6307 0.6307 0.6307 1"))
-			for _, icon in pairs(spec.easyAutoLoaderIcons) do
+			for _, icon in pairs(spec.EasyAutoLoaderIcons) do
 				icon:setColor(unpack(iconColor))
 			end
 		end
@@ -204,33 +213,33 @@ function easyAutoLoader:onLoad(savegame)
 	spec.triggerHelperModeEnabled = false
 end
 
-function easyAutoLoader:onPostLoad(savegame)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:onPostLoad(savegame)
+	local spec = self.spec_EasyAutoLoader
 	if savegame ~= nil and not savegame.resetVehicles then
-		local key = savegame.key.."."..autoloadModName..".easyAutoLoader"
+		local key = savegame.key.."."..autoloadModName..".EasyAutoLoader"
 		local state = Utils.getNoNil(getXMLInt(savegame.xmlFile, key.."#objectMode"), 1)
 		self:doStateChange(3, false, state, 0, spec.palletIcon, spec.squareBaleIcon, spec.roundBaleIcon, false)
 	end
 end
 
-function easyAutoLoader:onDelete()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:onDelete()
+	local spec = self.spec_EasyAutoLoader
 	if spec.currentNumObjects > 0 then
 		self:setUnload()
 	end
 	for i = 1, #spec.objectTriggers do
 		removeTrigger(spec.objectTriggers[i])
 	end
-	if spec.easyAutoLoaderIcons then
-		for _, icon in pairs(spec.easyAutoLoaderIcons) do
+	if spec.EasyAutoLoaderIcons then
+		for _, icon in pairs(spec.EasyAutoLoaderIcons) do
 			icon:delete()
 		end
 		spec.fillLevelBar:delete()
 	end
 end
 
-function easyAutoLoader:onReadStream(streamId, connection)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:onReadStream(streamId, connection)
+	local spec = self.spec_EasyAutoLoader
     spec.currentNumObjects = streamReadUInt16(streamId)
     spec.state = streamReadUInt8(streamId)
 	for i = 1, #spec.autoLoadObjects[spec.state].objects do
@@ -251,8 +260,8 @@ function easyAutoLoader:onReadStream(streamId, connection)
 	spec.unloadPosition = streamReadUInt8(streamId)
 end
 
-function easyAutoLoader:onWriteStream(streamId, connection)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:onWriteStream(streamId, connection)
+	local spec = self.spec_EasyAutoLoader
     streamWriteUInt16(streamId, spec.currentNumObjects)
     streamWriteUInt8(streamId, spec.state)
 	for _, object in pairs(spec.autoLoadObjects[spec.state].objects) do
@@ -266,8 +275,8 @@ function easyAutoLoader:onWriteStream(streamId, connection)
 	streamWriteUInt8(streamId, spec.unloadPosition)
 end
 
-function easyAutoLoader:onUpdate(dt)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:onUpdate(dt)
+	local spec = self.spec_EasyAutoLoader
 	if not spec.runOnce then
 		spec.runOnce = true
 		for index, objectToMount in pairs(spec.autoLoadObjects[spec.state].toMount) do
@@ -285,32 +294,32 @@ function easyAutoLoader:onUpdate(dt)
 	end
 end
 
-function easyAutoLoader:onDraw()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:onDraw()
+	local spec = self.spec_EasyAutoLoader
 	if not self:isDedicatedServer() and spec.currentNumObjects >= 1 then
 		local percentage = spec.currentNumObjects / spec.autoLoadObjects[spec.state].maxNumObjects
 		spec.fillLevelBar:setValue(percentage)
 		spec.fillLevelBar:render()
-		if spec.easyAutoLoaderIcons.palletIconOverlay and spec.palletIcon then
-			spec.easyAutoLoaderIcons.palletIconOverlay:render()
+		if spec.EasyAutoLoaderIcons.palletIconOverlay and spec.palletIcon then
+			spec.EasyAutoLoaderIcons.palletIconOverlay:render()
 		end
-		if spec.easyAutoLoaderIcons.squareBaleIconOverlay and spec.squareBaleIcon then
-			spec.easyAutoLoaderIcons.squareBaleIconOverlay:render()
+		if spec.EasyAutoLoaderIcons.squareBaleIconOverlay and spec.squareBaleIcon then
+			spec.EasyAutoLoaderIcons.squareBaleIconOverlay:render()
 		end
-		if spec.easyAutoLoaderIcons.roundBaleIconOverlay and spec.roundBaleIcon then
-			spec.easyAutoLoaderIcons.roundBaleIconOverlay:render()
+		if spec.EasyAutoLoaderIcons.roundBaleIconOverlay and spec.roundBaleIcon then
+			spec.EasyAutoLoaderIcons.roundBaleIconOverlay:render()
 		end
 		setTextBold(true)
 		setTextColor(unpack(spec.fillLevelsTextColor))
 		setTextAlignment(RenderText.ALIGN_RIGHT)
-		renderText(g_currentMission.hud.fillLevelsDisplay.origX + spec.fillLevelBar.width + spec.easyAutoLoaderIcons.palletIconOverlay.width, spec.fillLevelBarHeight + g_currentMission.hud.fillLevelsDisplay.fillLevelTextOffsetY, g_currentMission.hud.fillLevelsDisplay.fillLevelTextSize, spec.currentNumObjects.." / "..spec.autoLoadObjects[spec.state].maxNumObjects)
+		renderText(g_currentMission.hud.fillLevelsDisplay.origX + spec.fillLevelBar.width + spec.EasyAutoLoaderIcons.palletIconOverlay.width, spec.fillLevelBarHeight + g_currentMission.hud.fillLevelsDisplay.fillLevelTextOffsetY, g_currentMission.hud.fillLevelsDisplay.fillLevelTextSize, spec.currentNumObjects.." / "..spec.autoLoadObjects[spec.state].maxNumObjects)
 		setTextBold(false)
 	end
 end
 
-function easyAutoLoader:doStateChange(mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon, noEventSend)
-	easyAutoLoaderEvent.sendEvent(self, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon, noEventSend)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:doStateChange(mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon, noEventSend)
+	EasyAutoLoaderEvent.sendEvent(self, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon, noEventSend)
+	local spec = self.spec_EasyAutoLoader
 	if mode == 1 then
 		local object = NetworkUtil.getObject(var)
         if object == nil then
@@ -382,8 +391,8 @@ function easyAutoLoader:doStateChange(mode, bool, state, var, palletIcon, square
 	end
 end
 
-function easyAutoLoader:objectCallback(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:objectCallback(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	local spec = self.spec_EasyAutoLoader
 	if onEnter and spec.workMode then
 		local object = g_currentMission:getNodeObject(otherId)
 		if object == nil or object.mountObject ~= nil then
@@ -462,8 +471,8 @@ function easyAutoLoader:objectCallback(triggerId, otherId, onEnter, onLeave, onS
 	end
 end
 
-function easyAutoLoader:setMarkerVisibility(markervisibility, noEventSend)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:setMarkerVisibility(markervisibility, noEventSend)
+	local spec = self.spec_EasyAutoLoader
 	if markervisibility ~= spec.markerVisible then
 		SetMarkerVisibilityEvent.sendEvent(self, markervisibility, noEventSend)
         spec.markerVisible = markervisibility
@@ -472,8 +481,8 @@ function easyAutoLoader:setMarkerVisibility(markervisibility, noEventSend)
 	self:updateBindings()
 end
 
-function easyAutoLoader:setUnloadPosition(unloadPosition, noEventSend)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:setUnloadPosition(unloadPosition, noEventSend)
+	local spec = self.spec_EasyAutoLoader
 	if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
             g_server:broadcastEvent(SetUnloadPositionEvent:new(self, unloadPosition), nil, nil, self)
@@ -484,9 +493,9 @@ function easyAutoLoader:setUnloadPosition(unloadPosition, noEventSend)
 	spec.unloadPosition = unloadPosition
 end
 
-function easyAutoLoader:onRegisterActionEvents(isSelected, isOnActiveVehicle)
+function EasyAutoLoader:onRegisterActionEvents(isSelected, isOnActiveVehicle)
 	if self.isClient then
-		local spec = self.spec_easyAutoLoader
+		local spec = self.spec_EasyAutoLoader
 		if spec.actionEvents == nil then
 			spec.actionEvents = {}
 		else
@@ -494,7 +503,7 @@ function easyAutoLoader:onRegisterActionEvents(isSelected, isOnActiveVehicle)
 		end
 		if isSelected then
 			local eventAdded, eventId = false, nil
-			for actionId, entry in pairs(spec.easyAutoLoaderRegistrationList) do
+			for actionId, entry in pairs(spec.EasyAutoLoaderRegistrationList) do
 				eventAdded, eventId = self:addActionEvent(spec.actionEvents, actionId, self, entry.callback, entry.triggerUp, entry.triggerDown, entry.triggerAlways, entry.startActive, nil)
 				if eventAdded then
 					if actionId == InputAction.workMode then
@@ -511,8 +520,8 @@ function easyAutoLoader:onRegisterActionEvents(isSelected, isOnActiveVehicle)
 	end
 end
 
-function easyAutoLoader:updateBindings()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:updateBindings()
+	local spec = self.spec_EasyAutoLoader
 	if self:getIsActiveForInput() and self:getIsActive() then
 		g_inputBinding:setActionEventActive(spec.actionEvents[InputAction.workMode].actionEventId, spec.currentNumObjects ~= spec.autoLoadObjects[spec.state].maxNumObjects)
 		if spec.workMode then
@@ -537,8 +546,8 @@ function easyAutoLoader:updateBindings()
     end
 end
 
-function easyAutoLoader:setWorkMode()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:setWorkMode()
+	local spec = self.spec_EasyAutoLoader
 	if spec.currentNumObjects ~= spec.autoLoadObjects[spec.state].maxNumObjects then
 		self:setMarkerVisibility(false)
 		self:setUnloadPosition(spec.centerMarkerIndex)
@@ -550,8 +559,8 @@ function easyAutoLoader:setWorkMode()
 	self:updateBindings()
 end
 
-function easyAutoLoader:setSelect()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:setSelect()
+	local spec = self.spec_EasyAutoLoader
 	spec.state = spec.state + 1
 	if spec.state > #spec.autoLoadObjects then
 		spec.state = 1
@@ -559,8 +568,8 @@ function easyAutoLoader:setSelect()
 	self:doStateChange(3, false, spec.state, 0, spec.palletIcon, spec.squareBaleIcon, spec.roundBaleIcon, false)
 end
 
-function easyAutoLoader:changeMarkerPosition()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:changeMarkerPosition()
+	local spec = self.spec_EasyAutoLoader
 	local unloadPosition = spec.unloadPosition + 1
 	if unloadPosition > #spec.markerPositions then
 		unloadPosition = 1
@@ -573,13 +582,13 @@ function easyAutoLoader:changeMarkerPosition()
 	end
 end
 
-function easyAutoLoader:setUnload()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:setUnload()
+	local spec = self.spec_EasyAutoLoader
 	self:doStateChange(2, false, spec.unloadPosition, 0, false, false, false, false)
 end
 
-function easyAutoLoader:setMarkerPosition(markerX, markerY, markerZ, noEventSend)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:setMarkerPosition(markerX, markerY, markerZ, noEventSend)
+	local spec = self.spec_EasyAutoLoader
 	if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
             g_server:broadcastEvent(SetMarkerMoveEvent:new(self, markerX, markerY, markerZ), nil, nil, self)
@@ -590,50 +599,50 @@ function easyAutoLoader:setMarkerPosition(markerX, markerY, markerZ, noEventSend
 	setTranslation(spec.unloadMarker, markerX, markerY, markerZ)
 end
 
-function easyAutoLoader:moveMarkerLeft()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:moveMarkerLeft()
+	local spec = self.spec_EasyAutoLoader
 	local x, y, z = getTranslation(spec.unloadMarker)
 	x = MathUtil.clamp(x + spec.markerMoveSpeed, spec.markerMinX[spec.unloadPosition], spec.markerMaxX[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
-function easyAutoLoader:moveMarkerRight()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:moveMarkerRight()
+	local spec = self.spec_EasyAutoLoader
 	local x, y, z = getTranslation(spec.unloadMarker)
 	x = MathUtil.clamp(x - spec.markerMoveSpeed, spec.markerMinX[spec.unloadPosition], spec.markerMaxX[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
-function easyAutoLoader:moveMarkerUp()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:moveMarkerUp()
+	local spec = self.spec_EasyAutoLoader
 	local x, y, z = getTranslation(spec.unloadMarker)
 	y = MathUtil.clamp(y + spec.markerMoveSpeed, spec.markerMinY[spec.unloadPosition], spec.markerMaxY[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
-function easyAutoLoader:moveMarkerDown()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:moveMarkerDown()
+	local spec = self.spec_EasyAutoLoader
 	local x, y, z = getTranslation(spec.unloadMarker)
 	y = MathUtil.clamp(y - spec.markerMoveSpeed, spec.markerMinY[spec.unloadPosition], spec.markerMaxY[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
-function easyAutoLoader:moveMarkerForward()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:moveMarkerForward()
+	local spec = self.spec_EasyAutoLoader
 	local x, y, z = getTranslation(spec.unloadMarker)
 	z = MathUtil.clamp(z + spec.markerMoveSpeed, spec.markerMinZ[spec.unloadPosition], spec.markerMaxZ[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
-function easyAutoLoader:moveMarkerBackward()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:moveMarkerBackward()
+	local spec = self.spec_EasyAutoLoader
 	local x, y, z = getTranslation(spec.unloadMarker)
 	z = MathUtil.clamp(z - spec.markerMoveSpeed, spec.markerMinZ[spec.unloadPosition], spec.markerMaxZ[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
-function easyAutoLoader:moveMarkerOriginal()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:moveMarkerOriginal()
+	local spec = self.spec_EasyAutoLoader
 	x, y, z = unpack(spec.markerPositions[spec.unloadPosition].translation)
 	self:setMarkerPosition(x, y, z)
 	if spec.triggerHelperModeEnabled then
@@ -641,23 +650,23 @@ function easyAutoLoader:moveMarkerOriginal()
 	end
 end
 
-function easyAutoLoader:saveToXMLFile(xmlFile, key)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:saveToXMLFile(xmlFile, key)
+	local spec = self.spec_EasyAutoLoader
 	setXMLInt(xmlFile, key.."#objectMode", Utils.getNoNil(spec.state, 1))
 	if spec.currentNumObjects > 0 then
 		self:setUnload()
 	end
 end
 
-function easyAutoLoader:isDedicatedServer()
+function EasyAutoLoader:isDedicatedServer()
 	if g_server ~= nil and g_client ~= nil and g_dedicatedServerInfo ~= nil then
 		return true
 	end
 	return
 end
 
-function easyAutoLoader:triggerHelperMode()
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:triggerHelperMode()
+	local spec = self.spec_EasyAutoLoader
 	spec.triggerHelperModeEnabled = not spec.triggerHelperModeEnabled
 	local x, y, z = getTranslation(spec.unloadMarker)
 	local rx, ry, rz = getRotation(spec.unloadMarker)
@@ -674,8 +683,8 @@ function easyAutoLoader:triggerHelperMode()
 	self:setMarkerPosition(x, y, z)
 end
 
-function easyAutoLoader:setMarkerRotation(markerRX, markerRY, markerRZ, noEventSend)
-	local spec = self.spec_easyAutoLoader
+function EasyAutoLoader:setMarkerRotation(markerRX, markerRY, markerRZ, noEventSend)
+	local spec = self.spec_EasyAutoLoader
 	if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
             g_server:broadcastEvent(SetMarkerRotationEvent:new(self, markerRX, markerRY, markerRZ), nil, nil, self)
@@ -686,18 +695,18 @@ function easyAutoLoader:setMarkerRotation(markerRX, markerRY, markerRZ, noEventS
 	setRotation(spec.unloadMarker, markerRX, markerRY, markerRZ)
 end
 
-easyAutoLoaderEvent = {}
-easyAutoLoaderEvent_mt = Class(easyAutoLoaderEvent, Event)
-InitEventClass(easyAutoLoaderEvent, "easyAutoLoaderEvent")
+EasyAutoLoaderEvent = {}
+EasyAutoLoaderEvent_mt = Class(EasyAutoLoaderEvent, Event)
+InitEventClass(EasyAutoLoaderEvent, "EasyAutoLoaderEvent")
 
-function easyAutoLoaderEvent:emptyNew()
-	local self = Event:new(easyAutoLoaderEvent_mt)
-    self.className = "easyAutoLoaderEvent"
+function EasyAutoLoaderEvent:emptyNew()
+	local self = Event:new(EasyAutoLoaderEvent_mt)
+    self.className = "EasyAutoLoaderEvent"
     return self
 end
 
-function easyAutoLoaderEvent:new(vehicle, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon)
-    local self = easyAutoLoaderEvent:emptyNew()
+function EasyAutoLoaderEvent:new(vehicle, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon)
+    local self = EasyAutoLoaderEvent:emptyNew()
     self.vehicle = vehicle
     self.mode = mode
     self.bool = bool
@@ -709,7 +718,7 @@ function easyAutoLoaderEvent:new(vehicle, mode, bool, state, var, palletIcon, sq
     return self
 end
 
-function easyAutoLoaderEvent:readStream(streamId, connection)
+function EasyAutoLoaderEvent:readStream(streamId, connection)
     self.vehicle = NetworkUtil.readNodeObject(streamId)
     self.mode = streamReadUInt8(streamId)
     self.bool = streamReadBool(streamId)
@@ -721,7 +730,7 @@ function easyAutoLoaderEvent:readStream(streamId, connection)
     self:run(connection)
 end
 
-function easyAutoLoaderEvent:writeStream(streamId, connection)
+function EasyAutoLoaderEvent:writeStream(streamId, connection)
 	NetworkUtil.writeNodeObject(streamId, self.vehicle)
     streamWriteUInt8(streamId, self.mode)
     streamWriteBool(streamId, self.bool)
@@ -732,19 +741,19 @@ function easyAutoLoaderEvent:writeStream(streamId, connection)
     streamWriteBool(streamId, self.roundBaleIcon)
 end
 
-function easyAutoLoaderEvent:run(connection)  
+function EasyAutoLoaderEvent:run(connection)  
     self.vehicle:doStateChange(self.mode, self.bool, self.stateNum, self.var, self.palletIcon, self.squareBaleIcon, self.roundBaleIcon, true)
     if not connection:getIsServer() then
-        g_server:broadcastEvent(easyAutoLoaderEvent:new(self.vehicle, self.mode, self.bool, self.stateNum, self.var, self.palletIcon, self.squareBaleIcon, self.roundBaleIcon), nil, connection, self.vehicle)
+        g_server:broadcastEvent(EasyAutoLoaderEvent:new(self.vehicle, self.mode, self.bool, self.stateNum, self.var, self.palletIcon, self.squareBaleIcon, self.roundBaleIcon), nil, connection, self.vehicle)
     end
 end
 
-function easyAutoLoaderEvent.sendEvent(vehicle, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon, noEventSend)
+function EasyAutoLoaderEvent.sendEvent(vehicle, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon, noEventSend)
     if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
-            g_server:broadcastEvent(easyAutoLoaderEvent:new(vehicle, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon), nil, nil, vehicle)
+            g_server:broadcastEvent(EasyAutoLoaderEvent:new(vehicle, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon), nil, nil, vehicle)
         else
-            g_client:getServerConnection():sendEvent(easyAutoLoaderEvent:new(vehicle, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon))
+            g_client:getServerConnection():sendEvent(EasyAutoLoaderEvent:new(vehicle, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon))
         end
     end
 end
@@ -785,7 +794,7 @@ function SetMarkerVisibilityEvent:run(connection)
 end
 
 function SetMarkerVisibilityEvent.sendEvent(markerObject, markerActive, noEventSend)
-    if markerObject.spec_easyAutoLoader.markerActive ~= markerActive then
+    if markerObject.spec_EasyAutoLoader.markerActive ~= markerActive then
         if noEventSend == nil or noEventSend == false then
             if g_server ~= nil then
                 g_server:broadcastEvent(SetMarkerVisibilityEvent:new(markerObject, markerActive), nil, nil, markerObject)
