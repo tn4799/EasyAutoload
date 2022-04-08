@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="44">
+<modDesc descVersion="64">
     <author>alfalfa6945</author>
     <version>0.1.1.3</version>
     <title>
@@ -13,7 +13,7 @@
     <iconFilename>icon.png</iconFilename>
     <multiplayer supported="true"/>
 
-	<l10n filenamePrefix="l10n"/>
+	<l10n filenamePrefix="translations/l10n"/>
 	
 	<actions>
 		<action name="workMode" axisType="HALF"/>
@@ -80,7 +80,7 @@
 		</actionBinding>
 	</inputBinding>
 	
-	<extraSourceFiles>
-		<sourceFile filename="scripts/register.lua" />
-	</extraSourceFiles>
+	<specializations>
+		<specialization name="" className="" filename="" />
+	</specializations>
 </modDesc>
