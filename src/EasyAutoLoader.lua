@@ -11,6 +11,10 @@ function EasyAutoLoader.prerequisitesPresent(specializations)
 	return true
 end
 
+function EasyAutoLoader.initSpecialization()
+	EasyAutoLoader.registerXMLPaths(Vehicle.xmlSchema, "vehicle.easyAutoload")
+end
+
 function EasyAutoLoader.registerFunctions(vehicleType)
 	SpecializationUtil.registerFunction(vehicleType, "doStateChange", EasyAutoLoader.doStateChange)
 	SpecializationUtil.registerFunction(vehicleType, "setMarkerVisibility", EasyAutoLoader.setMarkerVisibility)
@@ -42,6 +46,9 @@ end
 
 function EasyAutoLoader.registerXMLPaths(schema, basePath)
 	schema:setXMLSpecializationType("easyAutoLoader")
+
+	print("register EAL schema")
+	print("basePath: " .. tostring(basePath))
 
 	schema:register(XMLValueType.NODE_INDEX, basePath .. "#triggerNode", "Node of the trigger that registers the pickup objects.")
 	schema:register(XMLValueType.NODE_INDEX, basePath .. "#markerNode")
@@ -97,12 +104,12 @@ function EasyAutoLoader:onLoad(savegame)
 		end
 	end
 	spec.markerMoveSpeed = self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#markerMoveSpeed")
-	spec.markerMinX = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#minX"))
-	spec.markerMaxX = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#maxX"))
-	spec.markerMinY = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#minY"))
-	spec.markerMaxY = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#maxY"))
-	spec.markerMinZ = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#minZ"))
-	spec.markerMaxZ = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#maxZ"))
+	spec.markerMinX = self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#minX"):split(" ")
+	spec.markerMaxX = self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#maxX"):split(" ")
+	spec.markerMinY = self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#minY"):split(" ")
+	spec.markerMaxY = self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#maxY"):split(" ")
+	spec.markerMinZ = self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#minZ"):split(" ")
+	spec.markerMaxZ = self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#maxZ"):split(" ")
 	spec.palletIcon = false
 	spec.squareBaleIcon = false
 	spec.roundBaleIcon = false
@@ -170,8 +177,8 @@ function EasyAutoLoader:onLoad(savegame)
 			end
 			entry.isHDbale = Utils.getNoNil(getUserAttribute(objectId, "isHDbale"), false)
 			entry.isMissionPallet = Utils.getNoNil(getUserAttribute(objectId, "isMissionPallet"), false)
-			entry.excludedFillTypes = StringUtil.splitString(" ", getUserAttribute(objectId, "excludedFillTypes"))
-			entry.includedFillTypes = StringUtil.splitString(" ", getUserAttribute(objectId, "includedFillTypes"))
+			entry.excludedFillTypes = getUserAttribute(objectId, "excludedFillTypes"):split(" ")
+			entry.includedFillTypes = getUserAttribute(objectId, "includedFillTypes"):split(" ")
 			entry.usePalletSize = Utils.getNoNil(getUserAttribute(objectId, "usePalletSize"), false)
 			if entry.usePalletSize then
 				entry.sizeLength = Utils.getNoNil(getUserAttribute(objectId, "sizeLength"), "2.00")
