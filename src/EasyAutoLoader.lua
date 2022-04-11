@@ -73,7 +73,7 @@ function EasyAutoLoader.registerXMLPaths(schema, basePath)
 end
 
 function EasyAutoLoader:onLoad(savegame)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	local baseKey = "vehicle.easyAutoLoad"
 
 	spec.moveTrigger = self.xmlFile:getValue(baseKey .. "#triggerAnimation")
@@ -238,7 +238,7 @@ function EasyAutoLoader:onLoad(savegame)
 end
 
 function EasyAutoLoader:onPostLoad(savegame)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if savegame ~= nil and not savegame.resetVehicles then
 		local key = savegame.key.."."..autoloadModName..".EasyAutoLoader"
 		local state = savegame.xmlFile:getInt(key .. "#objectMode", 1)
@@ -247,7 +247,7 @@ function EasyAutoLoader:onPostLoad(savegame)
 end
 
 function EasyAutoLoader:onDelete()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if spec.currentNumObjects > 0 then
 		self:setUnload()
 	end
@@ -263,7 +263,7 @@ function EasyAutoLoader:onDelete()
 end
 
 function EasyAutoLoader:onReadStream(streamId, connection)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
     spec.currentNumObjects = streamReadUInt16(streamId)
     spec.state = streamReadUInt8(streamId)
 	for i = 1, #spec.autoLoadObjects[spec.state].objects do
@@ -285,7 +285,7 @@ function EasyAutoLoader:onReadStream(streamId, connection)
 end
 
 function EasyAutoLoader:onWriteStream(streamId, connection)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
     streamWriteUInt16(streamId, spec.currentNumObjects)
     streamWriteUInt8(streamId, spec.state)
 	for _, object in pairs(spec.autoLoadObjects[spec.state].objects) do
@@ -300,7 +300,7 @@ function EasyAutoLoader:onWriteStream(streamId, connection)
 end
 
 function EasyAutoLoader:onUpdate(dt)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if not spec.runOnce then
 		spec.runOnce = true
 		for index, objectToMount in pairs(spec.autoLoadObjects[spec.state].toMount) do
@@ -319,7 +319,7 @@ function EasyAutoLoader:onUpdate(dt)
 end
 
 function EasyAutoLoader:onDraw()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if not self:isDedicatedServer() and spec.currentNumObjects >= 1 then
 		local percentage = spec.currentNumObjects / spec.autoLoadObjects[spec.state].maxNumObjects
 		spec.fillLevelBar:setValue(percentage)
@@ -343,7 +343,7 @@ end
 
 function EasyAutoLoader:doStateChange(mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon, noEventSend)
 	EasyAutoLoaderEvent.sendEvent(self, mode, bool, state, var, palletIcon, squareBaleIcon, roundBaleIcon, noEventSend)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if mode == 1 then
 		local object = NetworkUtil.getObject(var)
         if object == nil then
@@ -416,7 +416,7 @@ function EasyAutoLoader:doStateChange(mode, bool, state, var, palletIcon, square
 end
 
 function EasyAutoLoader:objectCallback(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if onEnter and spec.workMode then
 		local object = g_currentMission:getNodeObject(otherId)
 		if object == nil or object.mountObject ~= nil then
@@ -496,7 +496,7 @@ function EasyAutoLoader:objectCallback(triggerId, otherId, onEnter, onLeave, onS
 end
 
 function EasyAutoLoader:setMarkerVisibility(markervisibility, noEventSend)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if markervisibility ~= spec.markerVisible then
 		SetMarkerVisibilityEvent.sendEvent(self, markervisibility, noEventSend)
         spec.markerVisible = markervisibility
@@ -506,7 +506,7 @@ function EasyAutoLoader:setMarkerVisibility(markervisibility, noEventSend)
 end
 
 function EasyAutoLoader:setUnloadPosition(unloadPosition, noEventSend)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
             g_server:broadcastEvent(SetUnloadPositionEvent:new(self, unloadPosition), nil, nil, self)
@@ -519,7 +519,7 @@ end
 
 function EasyAutoLoader:onRegisterActionEvents(isSelected, isOnActiveVehicle)
 	if self.isClient then
-		local spec = self.spec_EasyAutoLoader
+		local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 		if spec.actionEvents == nil then
 			spec.actionEvents = {}
 		else
@@ -545,7 +545,7 @@ function EasyAutoLoader:onRegisterActionEvents(isSelected, isOnActiveVehicle)
 end
 
 function EasyAutoLoader:updateBindings()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if self:getIsActiveForInput() and self:getIsActive() then
 		g_inputBinding:setActionEventActive(spec.actionEvents[InputAction.workMode].actionEventId, spec.currentNumObjects ~= spec.autoLoadObjects[spec.state].maxNumObjects)
 		if spec.workMode then
@@ -571,7 +571,7 @@ function EasyAutoLoader:updateBindings()
 end
 
 function EasyAutoLoader:setWorkMode()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if spec.currentNumObjects ~= spec.autoLoadObjects[spec.state].maxNumObjects then
 		self:setMarkerVisibility(false)
 		self:setUnloadPosition(spec.centerMarkerIndex)
@@ -584,7 +584,7 @@ function EasyAutoLoader:setWorkMode()
 end
 
 function EasyAutoLoader:setSelect()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	spec.state = spec.state + 1
 	if spec.state > #spec.autoLoadObjects then
 		spec.state = 1
@@ -593,7 +593,7 @@ function EasyAutoLoader:setSelect()
 end
 
 function EasyAutoLoader:changeMarkerPosition()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	local unloadPosition = spec.unloadPosition + 1
 	if unloadPosition > #spec.markerPositions then
 		unloadPosition = 1
@@ -607,12 +607,12 @@ function EasyAutoLoader:changeMarkerPosition()
 end
 
 function EasyAutoLoader:setUnload()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	self:doStateChange(2, false, spec.unloadPosition, 0, false, false, false, false)
 end
 
 function EasyAutoLoader:setMarkerPosition(markerX, markerY, markerZ, noEventSend)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
             g_server:broadcastEvent(SetMarkerMoveEvent:new(self, markerX, markerY, markerZ), nil, nil, self)
@@ -624,49 +624,49 @@ function EasyAutoLoader:setMarkerPosition(markerX, markerY, markerZ, noEventSend
 end
 
 function EasyAutoLoader:moveMarkerLeft()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	local x, y, z = getTranslation(spec.unloadMarker)
 	x = MathUtil.clamp(x + spec.markerMoveSpeed, spec.markerMinX[spec.unloadPosition], spec.markerMaxX[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
 function EasyAutoLoader:moveMarkerRight()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	local x, y, z = getTranslation(spec.unloadMarker)
 	x = MathUtil.clamp(x - spec.markerMoveSpeed, spec.markerMinX[spec.unloadPosition], spec.markerMaxX[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
 function EasyAutoLoader:moveMarkerUp()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	local x, y, z = getTranslation(spec.unloadMarker)
 	y = MathUtil.clamp(y + spec.markerMoveSpeed, spec.markerMinY[spec.unloadPosition], spec.markerMaxY[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
 function EasyAutoLoader:moveMarkerDown()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	local x, y, z = getTranslation(spec.unloadMarker)
 	y = MathUtil.clamp(y - spec.markerMoveSpeed, spec.markerMinY[spec.unloadPosition], spec.markerMaxY[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
 function EasyAutoLoader:moveMarkerForward()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	local x, y, z = getTranslation(spec.unloadMarker)
 	z = MathUtil.clamp(z + spec.markerMoveSpeed, spec.markerMinZ[spec.unloadPosition], spec.markerMaxZ[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
 function EasyAutoLoader:moveMarkerBackward()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	local x, y, z = getTranslation(spec.unloadMarker)
 	z = MathUtil.clamp(z - spec.markerMoveSpeed, spec.markerMinZ[spec.unloadPosition], spec.markerMaxZ[spec.unloadPosition])
 	self:setMarkerPosition(x, y, z)
 end
 
 function EasyAutoLoader:moveMarkerOriginal()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	x, y, z = unpack(spec.markerPositions[spec.unloadPosition].translation)
 	self:setMarkerPosition(x, y, z)
 	if spec.triggerHelperModeEnabled then
@@ -675,7 +675,7 @@ function EasyAutoLoader:moveMarkerOriginal()
 end
 
 function EasyAutoLoader:saveToXMLFile(xmlFile, key)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	xmlFile:setInt(key.."#objectMode", Utils.getNoNil(spec.state, 1))
 	if spec.currentNumObjects > 0 then
 		self:setUnload()
@@ -690,7 +690,7 @@ function EasyAutoLoader:isDedicatedServer()
 end
 
 function EasyAutoLoader:triggerHelperMode()
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	spec.triggerHelperModeEnabled = not spec.triggerHelperModeEnabled
 	local x, y, z = getTranslation(spec.unloadMarker)
 	local rx, ry, rz = getRotation(spec.unloadMarker)
@@ -708,7 +708,7 @@ function EasyAutoLoader:triggerHelperMode()
 end
 
 function EasyAutoLoader:setMarkerRotation(markerRX, markerRY, markerRZ, noEventSend)
-	local spec = self.spec_EasyAutoLoader
+	local spec = self["spec_FS22_EasyAutoLoad.easyAutoLoader"]
 	if noEventSend == nil or noEventSend == false then
         if g_server ~= nil then
             g_server:broadcastEvent(SetMarkerRotationEvent:new(self, markerRX, markerRY, markerRZ), nil, nil, self)
