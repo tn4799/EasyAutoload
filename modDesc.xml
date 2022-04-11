@@ -81,6 +81,6 @@
 	</inputBinding>
 	
 	<specializations>
-		<specialization name="EasyAutoLoader" className="EasyAutoLoader" filename="src/EasyAutoLoader.lua" />
+		<specialization name="easyAutoLoader" className="EasyAutoLoader" filename="src/EasyAutoLoader.lua" />
 	</specializations>
 </modDesc>
