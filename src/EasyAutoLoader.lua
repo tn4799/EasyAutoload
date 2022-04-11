@@ -42,55 +42,71 @@ end
 
 function EasyAutoLoader.registerXMLPaths(schema, basePath)
 	schema:setXMLSpecializationType("easyAutoLoader")
-	--basePath = basePath .. ".easyAutoLoader"
 
 	schema:register(XMLValueType.NODE_INDEX, basePath .. "#triggerNode", "Node of the trigger that registers the pickup objects.")
 	schema:register(XMLValueType.NODE_INDEX, basePath .. "#markerNode")
 	schema:register(XMLValueType.NODE_INDEX, basePath .. "#centerMarkerIndex", "The center node of the marker.", 1)
+	schema:register(XMLValueType.NODE_INDEX, basePath .. "#objectsNode")
+	schema:register(XMLValueType.NODE_INDEX, basePath .. "#markerPositionsIndex")
 	schema:register(XMLValueType.STRING, basePath .. "#triggerAnimation")
 	schema:register(XMLValueType.BOOL, basePath .. "#useMarkerRotate", "Decides if the marker can be rotated.", false)
+	schema:register(XMLValueType.BOOL, basePath .. ".levelBarOptions#coloredIcons", "", false) -- TODO: add description text
 	schema:register(XMLValueType.FLOAT, basePath .. ".moveableMarkerOptions#markerLengthCenterOffset", "How far is he marker offset from the center.", 0)
 	schema:register(XMLValueType.FLOAT, basePath .. ".moveableMarkerOptions#markerMoveSpeed", "How fast does the marker move when repositioning it.", 0.05)
 	schema:register(XMLValueType.FLOAT, basePath .. "#unloadHeightOffset", "The height above the marker position where the items will get placed.", 1.1)
-	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#minX", "the minimal x-translation of the marker for the 4 unloading states.", 0)
-	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#maxX", "the maximal x-translation of the marker for the 4 unloading states.", 0)
+	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#minX", "the minimal x-translation of the marker for the unloading states.", "0 4 -25 -25")
+	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#maxX", "the maximal x-translation of the marker for the unloading states.", "0 25 25 -4")
+	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#minY", "the minimal x-translation of the marker for the unloading states.", "0 -0.7 -0.7 -0.7")
+	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#maxY", "the maximal x-translation of the marker for the unloading states.", "0 15 15 15")
+	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#minZ", "the minimal x-translation of the marker for the unloading states.", "0 -20 -30 -20")
+	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#maxZ", "the maximal x-translation of the marker for the unloading states.", "0 20 -16 20")
+	schema:register(XMLValueType.STRING, basePath .. ".palletIcon#colorIcon")
+	schema:register(XMLValueType.STRING, basePath .. ".palletIcon#overlayIcon")
+	schema:register(XMLValueType.STRING, basePath .. ".roundBaleIcon#colorIcon")
+	schema:register(XMLValueType.STRING, basePath .. ".roundBaleIcon#overlayIcon")
+	schema:register(XMLValueType.STRING, basePath .. ".squareBaleIcon#colorIcon")
+	schema:register(XMLValueType.STRING, basePath .. ".squareBaleIcon#overlayIcon")
+	schema:register(XMLValueType.STRING, basePath .. ".weightIcon#colorIcon")
+	schema:register(XMLValueType.STRING, basePath .. ".weightIcon#overlayIcon")
+	schema:register(XMLValueType.COLOR, basePath .. ".levelBarOptions#fillLevelColor", "", "0.991 0.3865 0.01 1") -- TODO: add description text
+	schema:register(XMLValueType.COLOR, basePath .. ".levelBarOptions#iconColor", "", "0.6307 0.6307 0.6307 1") -- TODO: add description text
 end
 
 function EasyAutoLoader:onLoad(savegame)
 	local spec = self.spec_EasyAutoLoader
 	local baseKey = "vehicle.easyAutoLoad"
-	
+
 	spec.moveTrigger = self.xmlFile:getValue(baseKey .. "#triggerAnimation")
 	spec.workMode = false
 	spec.currentNumObjects = 0
 	spec.unloadPosition = 1
 	spec.state = 1
 	spec.var = 0
-	spec.centerMarkerIndex = Utils.getNoNil(getXMLInt(self.xmlFile, "vehicle.easyAutoLoad#centerMarkerIndex"), 1)
-	spec.unloadHeightOffset = Utils.getNoNil(getXMLFloat(self.xmlFile, "vehicle.easyAutoLoad#unloadHeightOffset"), 1.1)
-	spec.unloadMarker = I3DUtil.indexToObject(self.components, getXMLString(self.xmlFile, "vehicle.easyAutoLoad#markerNode"), self.i3dMappings)
-	spec.useMarkerRotate = Utils.getNoNil(getXMLBool(self.xmlFile, "vehicle.easyAutoLoad#useMarkerRotate"), false)
+	spec.centerMarkerIndex = self.xmlFile:getValue(baseKey .. "#centerMarkerIndex")
+	spec.unloadHeightOffset = self.xmlFile:getValue(baseKey .. "#unloadHeightOffset")
+	spec.unloadMarker = self.xmlFile:getValue(baseKey .. "#markerNode", nil, self.components, self.i3dMappings)
+	spec.useMarkerRotate = self.xmlFile:getValue(baseKey .. "#useMarkerRotate")
 	spec.markerVisible = false
 	if spec.unloadMarker then
 		local markerLength = Utils.getNoNil(getUserAttribute(spec.unloadMarker, "markerLength"), 15.77)
-		local markerLengthCenterOffset = Utils.getNoNil(getXMLFloat(self.xmlFile, "vehicle.easyAutoLoad.moveableMarkerOptions#markerLengthCenterOffset"), 0)
+		local markerLengthCenterOffset = self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#markerLengthCenterOffset")
 		 spec.unloaderMarkerYoffset = (markerLength + markerLengthCenterOffset) / 2 
 		if getVisibility(spec.unloadMarker) then
 			spec.markerVisible = true
 			self:setMarkerVisibility(false, true)
 		end
 	end
-	spec.markerMoveSpeed = Utils.getNoNil(getXMLFloat(self.xmlFile, "vehicle.easyAutoLoad.moveableMarkerOptions#markerMoveSpeed"), 0.05)
-	spec.markerMinX = StringUtil.splitString(" ", Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.moveableMarkerOptions#minX"), "0 4 -25 -25"))
-	spec.markerMaxX = StringUtil.splitString(" ", Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.moveableMarkerOptions#maxX"), "0 25 25 -4"))
-	spec.markerMinY = StringUtil.splitString(" ", Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.moveableMarkerOptions#minY"), "0 -0.7 -0.7 -0.7"))
-	spec.markerMaxY = StringUtil.splitString(" ", Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.moveableMarkerOptions#maxY"), "0 15 15 15"))
-	spec.markerMinZ = StringUtil.splitString(" ", Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.moveableMarkerOptions#minZ"), "0 -20 -30 -20"))
-	spec.markerMaxZ = StringUtil.splitString(" ", Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.moveableMarkerOptions#maxZ"), "0 20 -16 20"))
+	spec.markerMoveSpeed = self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#markerMoveSpeed")
+	spec.markerMinX = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#minX"))
+	spec.markerMaxX = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#maxX"))
+	spec.markerMinY = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#minY"))
+	spec.markerMaxY = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#maxY"))
+	spec.markerMinZ = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#minZ"))
+	spec.markerMaxZ = StringUtil.splitString(" ", self.xmlFile:getValue(baseKey .. ".moveableMarkerOptions#maxZ"))
 	spec.palletIcon = false
 	spec.squareBaleIcon = false
 	spec.roundBaleIcon = false
-	local markerPositions = I3DUtil.indexToObject(self.components, getXMLString(self.xmlFile, "vehicle.easyAutoLoad#markerPositionsIndex"), self.i3dMappings)
+	local markerPositions = self.xmlFile:getValue(baseKey .. "#markerPositionsIndex", nil, self.components, self.i3dMappings)
 	local numMarkerChildren = getNumOfChildren(markerPositions)
 	if numMarkerChildren > 0 then
 		spec.markerPositions = {}
@@ -104,7 +120,7 @@ function EasyAutoLoader:onLoad(savegame)
 			table.insert(spec.markerPositions, entry)
 		end
 	end
-	local triggerNode = I3DUtil.indexToObject(self.components, getXMLString(self.xmlFile, "vehicle.easyAutoLoad#triggersIndex"), self.i3dMappings)
+	local triggerNode = self.xmlFile:getValue(baseKey .. "#triggerNode")
 	local numTriggerChildren = getNumOfChildren(triggerNode)
 	if numTriggerChildren > 0 then
 		spec.objectTriggers = {}
@@ -117,7 +133,7 @@ function EasyAutoLoader:onLoad(savegame)
 			addTrigger(triggerId, "objectCallback", self)
 		end
 	end
-	local objectsNode = I3DUtil.indexToObject(self.components, getXMLString(self.xmlFile, "vehicle.easyAutoLoad#objectsIndex"), self.i3dMappings)
+	local objectsNode = self.xmlFile:getValue(baseKey .. "#objectsNode")
 	local numChildren = getNumOfChildren(objectsNode)
 	if numChildren > 0 then
 		local function updateTable(objectTable, id)
@@ -187,10 +203,10 @@ function EasyAutoLoader:onLoad(savegame)
 	if spec.useMarkerRotate then
 		spec.EasyAutoLoaderRegistrationList[InputAction.markerRotation] = { callback=EasyAutoLoader.triggerHelperMode, triggerUp=false, triggerDown=true, triggerAlways=false, startActive=false, callbackState=-1, text=g_i18n:getText("input_markerRotation"), textVisibility=true }
 	end
-	spec.coloredIcons = Utils.getNoNil(getXMLBool(self.xmlFile, "vehicle.easyAutoLoad.levelBarOptions#coloredIcons"), false)
+	spec.coloredIcons = self.xmlFile:getValue(baseKey .. ".levelBarOptions#coloredIcons")
 	if not self:isDedicatedServer() then
 		spec.EasyAutoLoaderIcons = {}
-		local fillLevelColor = ConfigurationUtil.getColorFromString(Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.levelBarOptions#fillLevelColor"), "0.991 0.3865 0.01 1"))
+		local fillLevelColor = self.xmlFile:getValue(baseKey .. ".levelBarOptions#fillLevelColor")
 		local fillLevelTextColor = {1, 1, 1, 0.2}
 		spec.fillLevelsTextColor = {1, 1, 1, 1}
 		local uiScale = g_gameSettings:getValue("uiScale")
@@ -205,11 +221,11 @@ function EasyAutoLoader:onLoad(savegame)
 			end
 		end
 		spec.fillLevelBarHeight = g_currentMission.hud.fillLevelsDisplay.origY + ((offsetY + iconHeight) * numFillLevelDisplays)
-		spec.EasyAutoLoaderIcons.palletIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and getXMLString(self.xmlFile, "vehicle.easyAutoLoad.palletIcon#colorIcon") or getXMLString(self.xmlFile, "vehicle.easyAutoLoad.palletIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
-		spec.EasyAutoLoaderIcons.roundBaleIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and getXMLString(self.xmlFile, "vehicle.easyAutoLoad.roundBaleIcon#colorIcon") or getXMLString(self.xmlFile, "vehicle.easyAutoLoad.roundBaleIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
-		spec.EasyAutoLoaderIcons.squareBaleIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and getXMLString(self.xmlFile, "vehicle.easyAutoLoad.squareBaleIcon#colorIcon") or getXMLString(self.xmlFile, "vehicle.easyAutoLoad.squareBaleIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
+		spec.EasyAutoLoaderIcons.palletIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and self.xmlFile:getValue(baseKey .. ".palletIcon#colorIcon") or self.xmlFile:getValue(baseKey .. ".palletIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
+		spec.EasyAutoLoaderIcons.roundBaleIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and self.xmlFile:getValue(baseKey .. ".roundBaleIcon#colorIcon") or self.xmlFile:getValue(baseKey .. ".roundBaleIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
+		spec.EasyAutoLoaderIcons.squareBaleIconOverlay = Overlay:new(Utils.getFilename(spec.coloredIcons and self.xmlFile:getValue(baseKey .. ".squareBaleIcon#colorIcon") or self.xmlFile:getValue(baseKey .. ".squareBaleIcon#overlayIcon"), self.baseDirectory), g_currentMission.hud.fillLevelsDisplay.origX - offsetX, spec.fillLevelBarHeight, iconWidth, iconHeight)
 		if not spec.coloredIcons then
-			local iconColor = ConfigurationUtil.getColorFromString(Utils.getNoNil(getXMLString(self.xmlFile, "vehicle.easyAutoLoad.levelBarOptions#iconColor"), "0.6307 0.6307 0.6307 1"))
+			local iconColor = ConfigurationUtil.getColorFromString(self.xmlFile:getValue(baseKey .. ".levelBarOptions#iconColor"))
 			for _, icon in pairs(spec.EasyAutoLoaderIcons) do
 				icon:setColor(unpack(iconColor))
 			end
@@ -225,7 +241,7 @@ function EasyAutoLoader:onPostLoad(savegame)
 	local spec = self.spec_EasyAutoLoader
 	if savegame ~= nil and not savegame.resetVehicles then
 		local key = savegame.key.."."..autoloadModName..".EasyAutoLoader"
-		local state = Utils.getNoNil(getXMLInt(savegame.xmlFile, key.."#objectMode"), 1)
+		local state = savegame.xmlFile:getInt(key .. "#objectMode", 1)
 		self:doStateChange(3, false, state, 0, spec.palletIcon, spec.squareBaleIcon, spec.roundBaleIcon, false)
 	end
 end
@@ -660,7 +676,7 @@ end
 
 function EasyAutoLoader:saveToXMLFile(xmlFile, key)
 	local spec = self.spec_EasyAutoLoader
-	setXMLInt(xmlFile, key.."#objectMode", Utils.getNoNil(spec.state, 1))
+	xmlFile:setInt(key.."#objectMode", Utils.getNoNil(spec.state, 1))
 	if spec.currentNumObjects > 0 then
 		self:setUnload()
 	end
