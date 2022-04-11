@@ -42,17 +42,25 @@ end
 
 function EasyAutoLoader.registerXMLPaths(schema, basePath)
 	schema:setXMLSpecializationType("easyAutoLoader")
-	basePath = basePath .. ".easyAutoLoader"
+	--basePath = basePath .. ".easyAutoLoader"
 
-	schema:register(XMLValueType.NODE_INDEX, basePath .. "#triggerNode")
+	schema:register(XMLValueType.NODE_INDEX, basePath .. "#triggerNode", "Node of the trigger that registers the pickup objects.")
 	schema:register(XMLValueType.NODE_INDEX, basePath .. "#markerNode")
+	schema:register(XMLValueType.NODE_INDEX, basePath .. "#centerMarkerIndex", "The center node of the marker.", 1)
 	schema:register(XMLValueType.STRING, basePath .. "#triggerAnimation")
+	schema:register(XMLValueType.BOOL, basePath .. "#useMarkerRotate", "Decides if the marker can be rotated.", false)
+	schema:register(XMLValueType.FLOAT, basePath .. ".moveableMarkerOptions#markerLengthCenterOffset", "How far is he marker offset from the center.", 0)
+	schema:register(XMLValueType.FLOAT, basePath .. ".moveableMarkerOptions#markerMoveSpeed", "How fast does the marker move when repositioning it.", 0.05)
+	schema:register(XMLValueType.FLOAT, basePath .. "#unloadHeightOffset", "The height above the marker position where the items will get placed.", 1.1)
+	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#minX", "the minimal x-translation of the marker for the 4 unloading states.", 0)
+	schema:register(XMLValueType.STRING, basePath .. ".moveableMarkerOptions#maxX", "the maximal x-translation of the marker for the 4 unloading states.", 0)
 end
 
 function EasyAutoLoader:onLoad(savegame)
 	local spec = self.spec_EasyAutoLoader
+	local baseKey = "vehicle.easyAutoLoad"
 	
-	spec.moveTrigger = getXMLString(self.xmlFile, "vehicle.easyAutoLoad#triggerAnimation")
+	spec.moveTrigger = self.xmlFile:getValue(baseKey .. "#triggerAnimation")
 	spec.workMode = false
 	spec.currentNumObjects = 0
 	spec.unloadPosition = 1
@@ -60,7 +68,7 @@ function EasyAutoLoader:onLoad(savegame)
 	spec.var = 0
 	spec.centerMarkerIndex = Utils.getNoNil(getXMLInt(self.xmlFile, "vehicle.easyAutoLoad#centerMarkerIndex"), 1)
 	spec.unloadHeightOffset = Utils.getNoNil(getXMLFloat(self.xmlFile, "vehicle.easyAutoLoad#unloadHeightOffset"), 1.1)
-	spec.unloadMarker = I3DUtil.indexToObject(self.components, getXMLString(self.xmlFile, "vehicle.easyAutoLoad#markerIndex"), self.i3dMappings)
+	spec.unloadMarker = I3DUtil.indexToObject(self.components, getXMLString(self.xmlFile, "vehicle.easyAutoLoad#markerNode"), self.i3dMappings)
 	spec.useMarkerRotate = Utils.getNoNil(getXMLBool(self.xmlFile, "vehicle.easyAutoLoad#useMarkerRotate"), false)
 	spec.markerVisible = false
 	if spec.unloadMarker then
